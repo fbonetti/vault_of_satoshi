@@ -1,0 +1,15 @@
+require 'httparty'
+require 'openssl'
+require 'base64'
+require 'uri'
+require 'date'
+require 'active_support/core_ext/hash'
+require 'ostruct'
+
+require 'vault_of_satoshi/version' unless defined?(VaultOfSatoshi::VERSION)
+require 'vault_of_satoshi/api/base'
+require 'vault_of_satoshi/api/client'
+require 'vault_of_satoshi/api/error'
+require 'vault_of_satoshi/api/info'
+require 'vault_of_satoshi/api/public'
+require 'vault_of_satoshi/api/trade'
