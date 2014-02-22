@@ -27,7 +27,7 @@ describe VaultOfSatoshi::API::Info do
   describe "#balance" do
     it "should return the expected fields" do
       data = api_client.info.balance(currency: 'BTC')
-      data.should be_kind_of(Array)
+      data.should be_kind_of(BigDecimal)
     end
   end
 
