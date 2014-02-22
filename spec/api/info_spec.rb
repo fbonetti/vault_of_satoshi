@@ -24,4 +24,42 @@ describe VaultOfSatoshi::API::Info do
     end
   end
 
+  describe "#balance" do
+    it "should return the expected fields" do
+      data = api_client.info.balance(currency: 'BTC')
+      data.should be_kind_of(Array)
+    end
+  end
+
+  describe "#wallet_address" do
+    it "should return the expected fields" do
+      data = api_client.info.wallet_address(currency: 'BTC')
+      data.to_h.keys.should include(:wallet_address, :currency)
+    end
+  end
+
+  describe "#ticker" do
+    it "should return the expected fields" do
+      data = api_client.info.ticker(order_currency: 'BTC', payment_currency: 'USD')
+      data.to_h.keys.should include(
+        :date, :opening_price, :closing_price, :min_price, :max_price, 
+        :average_price, :units_traded, :volume_1day, :volume_7day
+      )
+    end
+  end
+
+  describe "#quote" do
+    it "should return the expected fields" do
+      data = api_client.info.quote(type: 'bid', order_currency: 'BTC', units: 1, payment_currency: 'USD', price: 10.0)
+      data.to_h.keys.should include(:rate, :subtotal, :fee, :total)
+    end
+  end
+
+  describe "#orderbook" do
+    it "should return the expected fields" do
+      data = api_client.info.orderbook(order_currency: 'BTC', payment_currency: 'USD')
+      data.to_h.keys.should include(:timestamp, :order_currency, :payment_currency, :bids, :asks)
+    end
+  end
+
 end
