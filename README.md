@@ -71,7 +71,7 @@ account.wallets.DOGE.daily_withdrawal_limit.to_f
 
 ```ruby
 @client.info.wallet_history(currency: 'DOGE').map(&:transfer_date)
-=> [Thu, 20 Feb 2014 01:17:35 +0000, Sat, 22 Feb 2014 15:26:09 -0600]
+=> [Thu, 20 Feb 2014 01:17:35 +0000, Sat, 22 Feb 2014 15:26:09 +0000]
 ```
 
 ### Ticker
