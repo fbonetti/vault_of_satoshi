@@ -67,7 +67,7 @@ module VaultOfSatoshi
       end
 
       def parse_currency_object(object)
-        BigDecimal.new(object["value"]).round(object["precision"])
+        BigDecimal.new(object["value"]).truncate(object["precision"])
       end
 
       def parse_boolean(int)
