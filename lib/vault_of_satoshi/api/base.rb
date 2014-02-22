@@ -9,8 +9,8 @@ module VaultOfSatoshi
       ALL_CURRENCIES = CRYPTO_CURRENCIES + FIAT_CURRENCIES
 
       def initialize(api_key, api_secret)
-        @api_key = "653669f940abbed6222c5cd60cb97f55c5bbc5e57308917d5d8b0c3b13a87f1b"
-        @api_secret = "e43e3a9f9ef8c27d7c1f07503efdd8468502f6b0173f1f3b97732cd3d9172952"
+        @api_key = api_key
+        @api_secret = api_secret
       end
 
       def inspect
@@ -31,42 +31,61 @@ module VaultOfSatoshi
       end
 
       def generate_api_sign(endpoint, params)
-        data = URI.encode_www_form(params)
+        data = params.to_param
         Base64.strict_encode64(OpenSSL::HMAC.hexdigest('sha512', @api_secret, endpoint + 0.chr + data))
       end
 
-      def parse_data!(data, options = {})
+      def parse_data(data, options = {})
         data = OpenStruct.new(data)
 
-        [*options[:timestamps]].each do |timestamp|
-          data[timestamp] = parse_unix_timestamp(data[timestamp])
+        [*options[:unix_timestamps]].each do |unix_timestamp|
+          data[unix_timestamp] = parse_unix_timestamp(data[unix_timestamp])
+        end
+
+        [*options[:microsecond_timestamps]].each do |microsecond_timestamp|
+          data[microsecond_timestamp] = parse_microsecond_timestamp(data[microsecond_timestamp])
         end
 
         [*options[:currency_objects]].each do |currency_object|
           data[currency_object] = parse_currency_object(data[currency_object])
         end
 
+        [*options[:booleans]].each do |boolean|
+          data[boolean] = parse_boolean(data[boolean])
+        end
+
         data
       end
 
-      def parse_unix_timestamp(timestamp)
-        DateTime.strptime(timestamp.to_s, "%s")
+      def parse_unix_timestamp(seconds_since_epoch)
+        DateTime.strptime(seconds_since_epoch.to_s, "%s")
+      end
+
+      def parse_microsecond_timestamp(micro_seconds_since_epoch)
+        seconds_since_epoch = BigDecimal.new(micro_seconds_since_epoch.to_s) / 1_000_000
+        DateTime.strptime(seconds_since_epoch.to_s("F"), "%s")
       end
 
       def parse_currency_object(object)
-        #BigDecimal.new(object["value"]).round(object["precision"])
-        object["value"].to_f.round(object["precision"].to_i)
+        BigDecimal.new(object["value"]).round(object["precision"])
+      end
+
+      def parse_boolean(int)
+        int.to_i == 1
+      end
+
+      # Accepts a date_input in the form of a unix timestamp, Date object, or Time object
+      def date_input_to_microseconds(date_input)
+        DateTime.strptime(date_input.to_f.to_s, '%s').strftime("%s").to_i * 1_000_000
       end
 
       def generate_currency_object(number)
         precision = 8
-        number = number.kind_of?(Float) ? BigDecimal.new(number.to_s) : BigDecimal.new(number)
-        value = sprintf("%0.8#{precision}f", number)
-
+        value = sprintf("%0.#{precision}f", number)
         {
           precision: precision,
           value: value,
-          value_int: value.gsub('.', '')
+          value_int: value.gsub('.', '').to_i
         }
       end
 

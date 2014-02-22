@@ -1,5 +1,5 @@
 module VaultOfSatoshi
-  module Api
+  module API
     class Error < StandardError
 
     end

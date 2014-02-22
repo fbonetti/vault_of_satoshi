@@ -19,7 +19,7 @@ module VaultOfSatoshi
             :average_price, :units_traded, :volume_1day, :volume_7day
           ]
         }
-        parse_data!(response["data"], parse_options)
+        parse_data(response["data"], parse_options)
       end
 
       def orderbook(params = {})
@@ -31,12 +31,12 @@ module VaultOfSatoshi
         raise VaultOfSatoshi::API::Error.new(response["message"]) if response["status"] == "error"
 
         response["data"]["bids"].map! do |bid_object|
-          parse_data!(bid_object, currency_objects: [:price, :quantity])
+          parse_data(bid_object, currency_objects: [:price, :quantity])
         end
         response["data"]["asks"].map! do |ask_object|
-          parse_data!(ask_object, currency_objects: [:price, :quantity])
+          parse_data(ask_object, currency_objects: [:price, :quantity])
         end
-        parse_data!(response["data"], timestamps: :timestamp)
+        parse_data(response["data"], timestamps: :timestamp)
       end
 
     end
